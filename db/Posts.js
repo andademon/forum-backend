@@ -51,6 +51,11 @@ db.getCollection("Posts").createIndex({
     name: "user_id"
 });
 db.getCollection("Posts").createIndex({
+    username: NumberInt("1")
+}, {
+    name: "username"
+});
+db.getCollection("Posts").createIndex({
     part: NumberInt("1")
 }, {
     name: "part"

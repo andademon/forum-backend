@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import jwt from 'jsonwebtoken';
-import expressJWT from 'express-jwt'
+// import expressJWT from 'express-jwt'
 import { ObjectId } from 'mongodb';
 import * as UserDao from "./dao/users.dao.js";
 import * as PostDao from "./dao/posts.dao.js"
@@ -16,6 +16,7 @@ app.use(express.static('public'))
 app.use(express.json())
 app.use(cors())
 // app.use(expressJWT({secret:secretKey}))
+// app.use(expressJWT({ secret: secretKey }).unless({ path: ['/login','/signup','/user*'] }));
 
 app.get('/users/email/:email', async (req,res) => {
   const email = req.param.email;
@@ -39,6 +40,11 @@ app.post('/users',(req,res) => {
   res.send("post /users")
 })
 
+function generateToken(_id){
+  const token = jwt.sign({_id:_id},secretKey,{expiresIn:'2d'})
+  return token;
+}
+
 app.post('/login',async (req,res) => {
   console.log(req.body)
   
@@ -51,8 +57,8 @@ app.post('/login',async (req,res) => {
       //密码检查
       if(await comparePasswords(data.password,user.password)){
         //全部成功，生成jwt传递给前端
-        const tokenStr = jwt.sign({email:data.email},secretKey,{expiresIn:60 * 120})
-        res.send({status: 200, msg: "confirmed", token:tokenStr, user:{id:user._id,username:user.username,email:user.email}})
+        const tokenStr = generateToken(user._id)
+        res.send({status: 200, msg: "confirmed", token:tokenStr, user:{_id:user._id,username:user.username,email:user.email}})
         return
       }
     }
@@ -74,8 +80,8 @@ app.post('/signup',async (req,res) => {
       const rs = UserDao.insertUser({username:data.username,email:data.email,password:await hashPassword(data.password),role:"user"});
       rs.then(async () => {
         const user = await UserDao.getUserByEmail(data.email);
-        const tokenStr = jwt.sign({email:user.email},secretKey,{expiresIn:60 * 120})
-        res.send({status:200, msg: "add user successfully", token:tokenStr,user:{id:user._id,username:user.username,email:user.email}})
+        const tokenStr = generateToken(user._id);
+        res.send({status:200, msg: "add user successfully", token:tokenStr,user:{_id:user._id,username:user.username,email:user.email}})
       })
     }
   }
@@ -94,6 +100,39 @@ app.get('/posts/:_id', async (req,res) => {
   const _id = req.params._id;
   const post = await PostDao.getPostById(new ObjectId(_id))
   res.send(post)
+})
+
+function authenticateToken(req, res, next) {
+  const token = req.body.token;
+  if (token == null) return res.sendStatus(401)
+  jwt.verify(token, secretKey, (err, parseData) => {
+    console.log(err)
+
+    if (err) return res.sendStatus(403)
+
+    req.body._id = parseData._id;
+
+    next()
+  })
+}
+
+app.post('/posts', authenticateToken ,async (req,res) => {
+  const data = req.body;
+  const user = await UserDao.getUserById(new ObjectId(data._id));
+  const time = new Date();
+  const post = {
+    title: data.title,
+    content: data.content,
+    user_id: user._id,
+    username: user.username,
+    post_time: time,
+    last_reply_time: time,
+    replys: [],
+    part: 'main',
+  }
+  const result = await PostDao.insertPost(post);
+  if(result.acknowledged) res.status(200).send();
+  else res.status(403).send();
 })
 
 app.listen(port, () => {

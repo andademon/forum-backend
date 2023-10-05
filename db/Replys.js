@@ -26,6 +26,11 @@ db.getCollection("Replys").createIndex({
     name: "user_id"
 });
 db.getCollection("Replys").createIndex({
+    "username": NumberInt("1")
+}, {
+    name: "username"
+});
+db.getCollection("Replys").createIndex({
     "post_id": NumberInt("1")
 }, {
     name: "post_id"
