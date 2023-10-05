@@ -24,13 +24,13 @@ const getPostByTitle = async (title) => {
 }
 
 const getPostByUserId = async (user_id) => {
-  const result = await posts.findOne({user_id:user_id});
-  return result;
+  const result = await posts.find({user_id:user_id});
+  return result.toArray();
 }
 
 const getPostByPart = async (part) => {
-  const result = await posts.findOne({part:part});
-  return result;
+  const result = await posts.find({part:part});
+  return result.toArray();
 }
 
 const updatePost = async (post) => {
@@ -46,7 +46,7 @@ const deletePost = async (post) => {
 export { insertPost,deletePost,getAllPosts,getPostById,getPostByUserId,getPostByPart,updatePost }
 
 //test
-// console.log(await insertPost({title:'测试文章3',content:'这是测试文章3',post_time:'2023-10-4',last_reply_time: '2023-10-4',replys: [{name:1},{name:2},{name:3}],user_id: 'test03',part: 'main'}))
+// console.log(await insertPost({title:'测试文章1',content:'这是测试文章1',post_time:'2023-10-4',last_reply_time: '2023-10-4',replys: [],user_id: '651d15a256840484daa97e2a',username:'test01',part: 'main'}))
 // console.log(await getAllPosts())
 // console.log(await getPostById(new ObjectId('651d5b97d18377d74bff8c34')))
 // console.log(await getPostByUserId('test01'))
