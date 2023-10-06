@@ -39,7 +39,12 @@ const deletePost = async (post) => {
 }
 
 const searchPost = async (text) => {
-  const result = await posts.find({"$text":{"$search":text}});
+  const result = await posts.find({
+    $or: [
+      {title:{$regex: new RegExp(text,'i')}},
+      {content:{$regex: new RegExp(text,'i')}}
+    ]
+  });
   return result.toArray();
 }
 

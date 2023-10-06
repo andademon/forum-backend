@@ -178,13 +178,9 @@ app.post('/reply', authenticateToken, async (req,res) => {
 
 app.get('/search/:text', async (req,res) => {
   const text = req.params.text;
+  console.log(text)
   const result = await PostDao.searchPost(text);
-  if(result.acknowledged){
-    const rs = await result.json()
-    res.status(200).send(rs)
-  }else{
-    res.status(403).send();
-  }
+  res.send(result)
 })
 
 // app.get('/reply/page/:page', async (req,res) => {
@@ -231,6 +227,20 @@ app.get('/search/:text', async (req,res) => {
 //     return
 //   }
 // })
+
+app.get('/posts/username/:username', async (req,res) => {
+  const username = req.params.username;
+  const user = await UserDao.getUserByUsername(username);
+  const posts = await PostDao.getPostByUserId(user._id);
+  res.send(posts);
+})
+
+app.get('/replys/username/:username', async (req,res) => {
+  const username = req.params.username;
+  const user = await UserDao.getUserByUsername(username);
+  const replys = await ReplyDao.getReplysByUserId(user._id);
+  res.send(replys);
+})
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`)
