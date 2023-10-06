@@ -94,8 +94,14 @@ app.post('/signup',async (req,res) => {
 
 //
 app.get('/posts', async (req,res) => {
-  // console.log(req.body)
+  // console.log(req)
   const posts = await PostDao.getAllPosts();
+  res.send(posts)
+})
+
+app.get('/postS/part/:part', async (req,res) => {
+  const part = req.params.part;
+  const posts = await PostDao.getPostByPart(part);
   res.send(posts)
 })
 
