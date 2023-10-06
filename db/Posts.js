@@ -21,7 +21,7 @@
 db.getCollection("Posts").drop();
 db.createCollection("Posts");
 db.getCollection("Posts").createIndex({
-    title: NumberInt("1")
+    title: "text"
 }, {
     name: "title"
 });
