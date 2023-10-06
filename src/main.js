@@ -176,6 +176,17 @@ app.post('/reply', authenticateToken, async (req,res) => {
   }
 })
 
+app.get('/search/:text', async (req,res) => {
+  const text = req.params.text;
+  const result = await PostDao.searchPost(text);
+  if(result.acknowledged){
+    const rs = await result.json()
+    res.status(200).send(rs)
+  }else{
+    res.status(403).send();
+  }
+})
+
 // app.get('/reply/page/:page', async (req,res) => {
 //   const page = req.params.page;
 // })

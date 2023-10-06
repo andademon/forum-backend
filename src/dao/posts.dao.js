@@ -18,11 +18,6 @@ const getPostById = async (_id) => {
   return result;
 }
 
-const getPostByTitle = async (title) => {
-  const result = await posts.find({title:title});
-  return result.toArray();
-}
-
 const getPostByUserId = async (user_id) => {
   const result = await posts.find({user_id:user_id});
   return result.toArray();
@@ -43,7 +38,12 @@ const deletePost = async (post) => {
   return result;
 }
 
-export { insertPost,deletePost,getAllPosts,getPostById,getPostByUserId,getPostByPart,updatePost }
+const searchPost = async (text) => {
+  const result = await posts.find({"$text":{"$search":text}});
+  return result.toArray();
+}
+
+export { insertPost,deletePost,getAllPosts,getPostById,getPostByUserId,getPostByPart,updatePost,searchPost }
 
 //test
 // console.log(await insertPost({title:'测试文章1',content:'这是测试文章1',post_time:'2023-10-4',last_reply_time: '2023-10-4',replys: [],user_id: '651d15a256840484daa97e2a',username:'test01',part: 'main'}))
