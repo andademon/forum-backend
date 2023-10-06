@@ -13,8 +13,8 @@ const getLikeById = async (_id) => {
   return result;
 }
 
-const getLikesgByPostId = async (post_id) => {
-  const result = await likes.find({post_id:post_id})
+const getLikesgByReplyId = async (reply_id) => {
+  const result = await likes.find({reply_id:reply_id})
   return result.toArray();
 }
 
@@ -28,4 +28,4 @@ const deleteLike = async (like) => {
   return result;
 }
 
-export { insertLike,deleteLike,getLikeById,getLikesgByPostId,getLikesByUserId }
+export { insertLike,deleteLike,getLikeById,getLikesgByReplyId,getLikesByUserId }

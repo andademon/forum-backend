@@ -4,7 +4,9 @@ import jwt from 'jsonwebtoken';
 // import expressJWT from 'express-jwt'
 import { ObjectId } from 'mongodb';
 import * as UserDao from "./dao/users.dao.js";
-import * as PostDao from "./dao/posts.dao.js"
+import * as PostDao from "./dao/posts.dao.js";
+import * as ReplyDao from "./dao/replys.dao.js";
+import * as LikeDao from "./dao/likes.dao.js";
 import { hashPassword,comparePasswords } from './utils/encode.js';
 import { getCurrentTime } from './utils/getCurrentTime.js'
 
@@ -132,12 +134,86 @@ app.post('/posts', authenticateToken ,async (req,res) => {
     post_time: time,
     last_reply_time: time,
     replys: [],
-    part: 'main',
+    part: data.part,
   }
   const result = await PostDao.insertPost(post);
   if(result.acknowledged) res.status(200).send();
   else res.status(403).send();
 })
+
+app.post('/reply', authenticateToken, async (req,res) => {
+  const data = req.body;
+  if(!data.content){
+    res.status(403).send();
+    return
+  }
+  console.log(data)
+  const user = await UserDao.getUserById(new ObjectId(data._id));
+  const post = await PostDao.getPostById(new ObjectId(data.post_id));
+  const reply = {
+    user_id: user._id,
+    username: user.username,
+    post_id: post._id,
+    content: data.content,
+    reply_time: getCurrentTime(),
+    likes: 0
+  }
+  post.replys.push(reply);
+  const result1 = await PostDao.updatePost(post)
+  const result2 = await ReplyDao.insertReply(reply);
+  if(result1.acknowledged && result2.acknowledged){
+    res.status(200).send();
+    return
+  }else{
+    res.status(403).send();
+    return
+  }
+})
+
+// app.get('/reply/page/:page', async (req,res) => {
+//   const page = req.params.page;
+// })
+
+// app.get('/posts/page/:page', async (req,res) => {
+//   const page = req.
+// })
+
+// app.post('/like', authenticateToken, async (req,res) => {
+//   const data = req.body;
+//   const like = {
+//     user_id: data._id,
+//     reply_id: data.reply_id,
+//     like_time:getCurrentTime(),
+//   }
+//   const reply = await ReplyDao.getReplyById(data.reply_id);
+//   const post = await PostDao.getPostById(reply.post_id);
+//   const likes = await LikeDao.getLikesgByReplyId(data.reply_id);
+//   for(let i = 0;i < likes.length;i++){
+//     if(data._id === likes[i]._id){
+//       like = like[i];
+//       const rs = await LikeDao.deleteLike(like);
+//       reply.likes--;
+//       const rs2 = await ReplyDao.updateReply(reply);
+//       if(rs.acknowledged && rs2.acknowledged){
+//         res.status(200).send();
+//         return
+//       }else{
+//         res.status(403).send();
+//         return
+//       }
+//     }
+//   }
+
+//   //TODO
+//   const result = await LikeDao.insertLike(like);
+//   if(result.acknowledged){
+//     res.status(200).send();
+//     return
+//   }else{
+//     res.status(403).send();
+//     return
+//   }
+// })
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`)
