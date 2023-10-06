@@ -6,6 +6,7 @@ import { ObjectId } from 'mongodb';
 import * as UserDao from "./dao/users.dao.js";
 import * as PostDao from "./dao/posts.dao.js"
 import { hashPassword,comparePasswords } from './utils/encode.js';
+import { getCurrentTime } from './utils/getCurrentTime.js'
 
 const secretKey = "test_^/]njuforum"
 
@@ -106,20 +107,23 @@ function authenticateToken(req, res, next) {
   const token = req.body.token;
   if (token == null) return res.sendStatus(401)
   jwt.verify(token, secretKey, (err, parseData) => {
-    console.log(err)
-
-    if (err) return res.sendStatus(403)
-
+    if (err){
+      console.log(err)
+      return res.sendStatus(403)
+    }
     req.body._id = parseData._id;
-
     next()
   })
 }
 
 app.post('/posts', authenticateToken ,async (req,res) => {
   const data = req.body;
+  if(!data.title || !data.content){
+    res.status(403).send({msg: "can't be null"})
+    return
+  }
   const user = await UserDao.getUserById(new ObjectId(data._id));
-  const time = new Date();
+  const time = getCurrentTime();
   const post = {
     title: data.title,
     content: data.content,
