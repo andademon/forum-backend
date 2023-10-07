@@ -49,7 +49,7 @@ function generateToken(_id){
 }
 
 app.post('/login',async (req,res) => {
-  console.log(req.body)
+  // console.log(req.body)
   
   const data = req.body;
   //判空检查
@@ -70,8 +70,8 @@ app.post('/login',async (req,res) => {
 })
 
 app.post('/signup',async (req,res) => {
+  console.log(req.body)
   const data = req.body;
-  console.log(data)
   if(data.username && data.email && data.password){
     if(await UserDao.getUserByEmail(data.email)){
       res.send({status:400,msg:"邮箱已注册"})
@@ -99,7 +99,7 @@ app.get('/posts', async (req,res) => {
   res.send(posts)
 })
 
-app.get('/postS/part/:part', async (req,res) => {
+app.get('/posts/part/:part', async (req,res) => {
   const part = req.params.part;
   const posts = await PostDao.getPostByPart(part);
   res.send(posts)
@@ -140,6 +140,7 @@ app.post('/posts', authenticateToken ,async (req,res) => {
     post_time: time,
     last_reply_time: time,
     replys: [],
+    replys_length: 0,
     part: data.part,
   }
   const result = await PostDao.insertPost(post);
@@ -150,7 +151,7 @@ app.post('/posts', authenticateToken ,async (req,res) => {
 app.post('/reply', authenticateToken, async (req,res) => {
   const data = req.body;
   if(!data.content){
-    res.status(403).send();
+    res.status(403).send({msg: "can't be null"});
     return
   }
   console.log(data)
@@ -165,6 +166,8 @@ app.post('/reply', authenticateToken, async (req,res) => {
     likes: 0
   }
   post.replys.push(reply);
+  post.replys_length++;
+  post.last_reply_time = reply.reply_time;
   const result1 = await PostDao.updatePost(post)
   const result2 = await ReplyDao.insertReply(reply);
   if(result1.acknowledged && result2.acknowledged){
@@ -178,7 +181,7 @@ app.post('/reply', authenticateToken, async (req,res) => {
 
 app.get('/search/:text', async (req,res) => {
   const text = req.params.text;
-  console.log(text)
+  // console.log(text)
   const result = await PostDao.searchPost(text);
   res.send(result)
 })
@@ -227,6 +230,17 @@ app.get('/search/:text', async (req,res) => {
 //     return
 //   }
 // })
+app.get('/posts/sort/:sort', async (req,res) => {
+  const sort = JSON.parse(req.params.sort);
+  const result = await PostDao.getAllPosts(sort);
+  res.send(result);
+})
+app.get('/posts/part/:part/sort/:sort', async (req,res) => {
+  const part = req.params.part;
+  const sort = JSON.parse(req.params.sort);
+  const result = await PostDao.getPostByPart(part,sort);
+  res.send(result);
+})
 
 app.get('/posts/username/:username', async (req,res) => {
   const username = req.params.username;
