@@ -18,8 +18,6 @@ const port = 3000;
 app.use(express.static('public'))
 app.use(express.json())
 app.use(cors())
-// app.use(expressJWT({secret:secretKey}))
-// app.use(expressJWT({ secret: secretKey }).unless({ path: ['/login','/signup','/user*'] }));
 
 app.get('/users/email/:email', async (req,res) => {
   const email = req.param.email;
@@ -92,18 +90,32 @@ app.post('/signup',async (req,res) => {
 
 
 
-//
 app.get('/posts', async (req,res) => {
-  // console.log(req)
-  const posts = await PostDao.getAllPosts();
+  let sort = JSON.parse(req.query.sort);
+  let page = JSON.parse(req.query.page);
+  if(sort === null || sort === 'null') sort = {last_reply_time:-1};
+  if(page === null || page === 'null') page = {};
+  const posts = await PostDao.getAllPosts(sort,page);
   res.send(posts)
 })
 
 app.get('/posts/part/:part', async (req,res) => {
+  let sort = JSON.parse(req.query.sort);
+  let page = JSON.parse(req.query.page);
+  if(sort === null || sort === 'null') sort = {last_reply_time:-1};
+  if(page === null || page === 'null') page = {};
+
   const part = req.params.part;
-  const posts = await PostDao.getPostByPart(part);
+  const posts = await PostDao.getPostByPart(part,sort,page);
   res.send(posts)
 })
+
+app.get('/posts/keyword/:text', async (req,res) => {
+  const text = req.params.text;
+  const result = await PostDao.searchPost(text);
+  res.send(result)
+})
+
 
 app.get('/posts/:_id', async (req,res) => {
   const _id = req.params._id;
@@ -179,13 +191,6 @@ app.post('/reply', authenticateToken, async (req,res) => {
   }
 })
 
-app.get('/search/:text', async (req,res) => {
-  const text = req.params.text;
-  // console.log(text)
-  const result = await PostDao.searchPost(text);
-  res.send(result)
-})
-
 // app.get('/reply/page/:page', async (req,res) => {
 //   const page = req.params.page;
 // })
@@ -230,16 +235,27 @@ app.get('/search/:text', async (req,res) => {
 //     return
 //   }
 // })
-app.get('/posts/sort/:sort', async (req,res) => {
-  const sort = JSON.parse(req.params.sort);
-  const result = await PostDao.getAllPosts(sort);
-  res.send(result);
-})
-app.get('/posts/part/:part/sort/:sort', async (req,res) => {
-  const part = req.params.part;
-  const sort = JSON.parse(req.params.sort);
-  const result = await PostDao.getPostByPart(part,sort);
-  res.send(result);
+
+
+// app.get('/posts/sort/:sort', async (req,res) => {
+//   const sort = JSON.parse(req.params.sort);
+//   const result = await PostDao.getAllPosts(sort);
+//   res.send(result);
+// })
+// app.get('/posts/part/:part/sort/:sort', async (req,res) => {
+//   const part = req.params.part;
+//   const sort = JSON.parse(req.params.sort);
+//   const result = await PostDao.getPostByPart(part,sort);
+//   res.send(result);
+// })
+
+//有哪些数据需要分页？
+//1.getAllPost(sort,pageSize,pageCount)
+//2.getPostByPart(part,sort,pageSize,pageCount)
+
+app.get('/posts/page/:page', async (req,res) => {
+  const page = req.params.page;
+  // const part = req.query()
 })
 
 app.get('/posts/username/:username', async (req,res) => {
