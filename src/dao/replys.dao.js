@@ -28,6 +28,11 @@ const getReplysByUserId = async (user_id) => {
   return result.toArray();
 }
 
+const getReplysByUsername = async (username) => {
+  const result = await replys.find({username:username}).sort({reply_time:-1});
+  return result.toArray();
+}
+
 const updateReply = async (reply) => {
   const result = await replys.replaceOne({_id:reply._id}, reply);
   return result;
@@ -38,7 +43,7 @@ const deleteReply = async (reply) => {
   return result;
 }
 
-export { insertReply,deleteReply,getAllReplys,getReplyById,getReplysByPostId,getReplysByUserId,updateReply }
+export { insertReply,deleteReply,getAllReplys,getReplyById,getReplysByUsername,getReplysByPostId,getReplysByUserId,updateReply }
 
 //test
 // let reply = await getReplyById(new ObjectId('651d6637282e992ed26c3b9d'))

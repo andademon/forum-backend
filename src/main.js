@@ -117,7 +117,7 @@ app.get('/posts/keyword/:text', async (req,res) => {
 })
 
 
-app.get('/posts/:_id', async (req,res) => {
+app.get('/posts/_id/:_id', async (req,res) => {
   const _id = req.params._id;
   const post = await PostDao.getPostById(new ObjectId(_id))
   res.send(post)
@@ -267,8 +267,8 @@ app.get('/posts/username/:username', async (req,res) => {
 
 app.get('/replys/username/:username', async (req,res) => {
   const username = req.params.username;
-  const user = await UserDao.getUserByUsername(username);
-  const replys = await ReplyDao.getReplysByUserId(user._id);
+  console.log('username: ',username)
+  const replys = await ReplyDao.getReplysByUsername(username);
   res.send(replys);
 })
 
