@@ -1,10 +1,20 @@
 import { MongoClient } from 'mongodb';
 
-const drop = () => {
-  const forum = client.db('forum');
-  if(forum) forum.drop()
-}
+const dropDatabase = async () => {
+  const url = 'mongodb://localhost:27017/';
+  const client = new MongoClient(url);
 
+  try {
+    await client.connect();
+    const database = client.db('forum');
+    await database.dropDatabase();
+    console.log('已删除：forum');
+  } catch (error) {
+    console.error(error);
+  } finally {
+    await client.close();
+  }
+};
 
 const main = async () => {
   const url = 'mongodb://localhost:27017/';
@@ -71,5 +81,5 @@ const main = async () => {
   client.close();
 };
 
-drop();
-main();
+dropDatabase();
+//main();
