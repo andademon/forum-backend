@@ -1,7 +1,3 @@
-# Forum System
+# Forum app backend
 
-backend: nodejs + koa + mongodb
-
-frontend: vue3 + Typescript + vue-router + pinia + vite
-
-UI: tailwindcss
+nodejs + express + mongodb
