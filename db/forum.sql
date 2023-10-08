@@ -11,7 +11,7 @@
  Target Server Version : 70001
  File Encoding         : 65001
 
- Date: 04/10/2023 21:47:11
+ Date: 08/10/2023 12:57:42
 */
 
 
@@ -42,6 +42,17 @@ db.getCollection("Likes").createIndex({
 db.getCollection("Posts").drop();
 db.createCollection("Posts");
 db.getCollection("Posts").createIndex({
+    "$**": "text"
+}, {
+    name: "title",
+    weights: {
+        title: NumberInt("1")
+    },
+    "default_language": "english",
+    "language_override": "language",
+    textIndexVersion: NumberInt("3")
+});
+db.getCollection("Posts").createIndex({
     "post_time": NumberInt("1")
 }, {
     name: "post_time"
@@ -62,9 +73,24 @@ db.getCollection("Posts").createIndex({
     name: "user_id"
 });
 db.getCollection("Posts").createIndex({
+    username: NumberInt("1")
+}, {
+    name: "username"
+});
+db.getCollection("Posts").createIndex({
     part: NumberInt("1")
 }, {
     name: "part"
+});
+db.getCollection("Posts").createIndex({
+    "$**": NumberInt("1")
+}, {
+    name: "content"
+});
+db.getCollection("Posts").createIndex({
+    "replys_length": NumberInt("1")
+}, {
+    name: "replys_length"
 });
 
 // ----------------------------
@@ -76,6 +102,11 @@ db.getCollection("Replys").createIndex({
     "user_id": NumberInt("1")
 }, {
     name: "user_id"
+});
+db.getCollection("Replys").createIndex({
+    username: NumberInt("1")
+}, {
+    name: "username"
 });
 db.getCollection("Replys").createIndex({
     "post_id": NumberInt("1")
