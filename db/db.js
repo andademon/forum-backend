@@ -1,5 +1,11 @@
 import { MongoClient } from 'mongodb';
 
+const drop = () => {
+  const forum = client.db('forum');
+  if(forum) forum.drop()
+}
+
+
 const main = async () => {
   const url = 'mongodb://localhost:27017/';
   const client = new MongoClient(url);
@@ -23,7 +29,7 @@ const main = async () => {
     const post = await forum.createCollection('Posts');
     if(post) {
       console.log('\n创建集合：Posts')
-      const title = await post.createIndex({"$**": "text"}, {name: "title",weights: {title: 1},"default_language": "english","language_override": "language",textIndexVersion: 3})
+      const title = await post.createIndex({"title": "text"}, {name: "title",weights: {title: 1},"default_language": "english","language_override": "language",textIndexVersion: 3})
       if(title) console.log('创建索引：title');
       const post_time = await post.createIndex({"post_time": 1}, {name: "post_time"});
       if(post_time) console.log('创建索引：post_time');
@@ -37,7 +43,7 @@ const main = async () => {
       if(username) console.log('创建索引：username');
       const part = await post.createIndex({part: 1}, {name: "part"})
       if(part) console.log('创建索引：part');
-      const content = await post.createIndex({"$**": 1}, {name: "content"})
+      const content = await post.createIndex({"content": 1}, {name: "content",weights:{"$**":1}})
       if(content) console.log('创建索引：content');
       const replys_length = await post.createIndex({"replys_length": 1}, {name: "replys_length"})
       if(replys_length) console.log('创建索引：replys_length');
@@ -65,4 +71,5 @@ const main = async () => {
   client.close();
 };
 
+drop();
 main();
