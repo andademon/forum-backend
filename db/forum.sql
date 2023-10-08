@@ -15,26 +15,26 @@
 */
 
 
-// ----------------------------
-// Collection structure for Likes
-// ----------------------------
-db.getCollection("Likes").drop();
-db.createCollection("Likes");
-db.getCollection("Likes").createIndex({
-    "user_id": NumberInt("1")
-}, {
-    name: "user_id"
-});
-db.getCollection("Likes").createIndex({
-    "reply_id": NumberInt("1")
-}, {
-    name: "reply_id"
-});
-db.getCollection("Likes").createIndex({
-    "like_time": NumberInt("1")
-}, {
-    name: "like_time"
-});
+-- // ----------------------------
+-- // Collection structure for Likes
+-- // ----------------------------
+-- db.getCollection("Likes").drop();
+-- db.createCollection("Likes");
+-- db.getCollection("Likes").createIndex({
+--     "user_id": NumberInt("1")
+-- }, {
+--     name: "user_id"
+-- });
+-- db.getCollection("Likes").createIndex({
+--     "reply_id": NumberInt("1")
+-- }, {
+--     name: "reply_id"
+-- });
+-- db.getCollection("Likes").createIndex({
+--     "like_time": NumberInt("1")
+-- }, {
+--     name: "like_time"
+-- });
 
 // ----------------------------
 // Collection structure for Posts
