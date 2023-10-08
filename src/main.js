@@ -191,72 +191,12 @@ app.post('/reply', authenticateToken, async (req,res) => {
   }
 })
 
-// app.get('/reply/page/:page', async (req,res) => {
-//   const page = req.params.page;
-// })
 
-// app.get('/posts/page/:page', async (req,res) => {
-//   const page = req.
-// })
-
-// app.post('/like', authenticateToken, async (req,res) => {
-//   const data = req.body;
-//   const like = {
-//     user_id: data._id,
-//     reply_id: data.reply_id,
-//     like_time:getCurrentTime(),
-//   }
-//   const reply = await ReplyDao.getReplyById(data.reply_id);
-//   const post = await PostDao.getPostById(reply.post_id);
-//   const likes = await LikeDao.getLikesgByReplyId(data.reply_id);
-//   for(let i = 0;i < likes.length;i++){
-//     if(data._id === likes[i]._id){
-//       like = like[i];
-//       const rs = await LikeDao.deleteLike(like);
-//       reply.likes--;
-//       const rs2 = await ReplyDao.updateReply(reply);
-//       if(rs.acknowledged && rs2.acknowledged){
-//         res.status(200).send();
-//         return
-//       }else{
-//         res.status(403).send();
-//         return
-//       }
-//     }
-//   }
-
-//   //TODO
-//   const result = await LikeDao.insertLike(like);
-//   if(result.acknowledged){
-//     res.status(200).send();
-//     return
-//   }else{
-//     res.status(403).send();
-//     return
-//   }
-// })
-
-
-// app.get('/posts/sort/:sort', async (req,res) => {
-//   const sort = JSON.parse(req.params.sort);
-//   const result = await PostDao.getAllPosts(sort);
-//   res.send(result);
-// })
-// app.get('/posts/part/:part/sort/:sort', async (req,res) => {
-//   const part = req.params.part;
-//   const sort = JSON.parse(req.params.sort);
-//   const result = await PostDao.getPostByPart(part,sort);
-//   res.send(result);
-// })
 
 //有哪些数据需要分页？
 //1.getAllPost(sort,pageSize,pageCount)
 //2.getPostByPart(part,sort,pageSize,pageCount)
 
-app.get('/posts/page/:page', async (req,res) => {
-  const page = req.params.page;
-  // const part = req.query()
-})
 
 app.get('/posts/username/:username', async (req,res) => {
   const username = req.params.username;
@@ -267,7 +207,7 @@ app.get('/posts/username/:username', async (req,res) => {
 
 app.get('/replys/username/:username', async (req,res) => {
   const username = req.params.username;
-  console.log('username: ',username)
+  // console.log('username: ',username)
   const replys = await ReplyDao.getReplysByUsername(username);
   res.send(replys);
 })

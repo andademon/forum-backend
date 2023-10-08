@@ -1,5 +1,6 @@
 import { client } from "./index.js";
 import { ObjectId } from "mongodb";
+// import * as PostDao from './posts.dao.js'
 
 const replys = client.db('forum').collection('Replys');
 
@@ -54,3 +55,15 @@ export { insertReply,deleteReply,getAllReplys,getReplyById,getReplysByUsername,g
 // console.log(await getReplysByUserId(new ObjectId('651d157856840484daa97e29')))
 // console.log(await updateReply(reply))
 // console.log(await deleteReply(reply))
+
+// const main = async () => {
+//   const replys = await getAllReplys();
+//   replys.forEach(async (reply) => {
+//     const post = await PostDao.getPostById(new ObjectId(reply.post_id));
+//     if(!post){
+//       // deleteReply(reply)
+//       console.log(post)
+//     }else console.log(post)
+//   })
+// }
+// main();
