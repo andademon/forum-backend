@@ -6,11 +6,11 @@ import { ObjectId } from 'mongodb';
 import * as UserDao from "./dao/users.dao.js";
 import * as PostDao from "./dao/posts.dao.js";
 import * as ReplyDao from "./dao/replys.dao.js";
-import * as LikeDao from "./dao/likes.dao.js";
 import { hashPassword,comparePasswords } from './utils/encode.js';
 import { getCurrentTime } from './utils/getCurrentTime.js'
+import 'dotenv/config.js';
 
-const secretKey = "test_^/]njuforum"
+const secretKey = process.env.SECRET_KEY;
 
 const app = new express();
 const port = 3000;
@@ -68,7 +68,7 @@ app.post('/login',async (req,res) => {
 })
 
 app.post('/signup',async (req,res) => {
-  console.log(req.body)
+  // console.log(req.body)
   const data = req.body;
   if(data.username && data.email && data.password){
     if(await UserDao.getUserByEmail(data.email)){
@@ -166,7 +166,7 @@ app.post('/reply', authenticateToken, async (req,res) => {
     res.status(403).send({msg: "can't be null"});
     return
   }
-  console.log(data)
+  // console.log(data)
   const user = await UserDao.getUserById(new ObjectId(data._id));
   const post = await PostDao.getPostById(new ObjectId(data.post_id));
   const reply = {
